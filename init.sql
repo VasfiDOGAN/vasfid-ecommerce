@@ -104,3 +104,7 @@ INSERT INTO products (category_id, name, description, price, stock) VALUES
 (4, 'Resim Kitabı', 'Sanat tarihi kitabı', 99.99, 80),
 (5, 'Bisiklet', 'Çocuk bisikleti', 299.99, 40),
 (5, 'Drone', 'Kameralı drone', 799.99, 20);
+
+ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '123123123';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
