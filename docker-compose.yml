@@ -1,0 +1,34 @@
+version: '3'
+services:
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - backend-1
+      - backend-2
+
+  backend-1:
+    build: ./backend
+    expose:
+      - "5000"
+    environment:
+      - FLASK_ENV=development
+
+  backend-2:
+    build: ./backend
+    expose:
+      - "5000"
+    environment:
+      - FLASK_ENV=development
+
+  database:
+    image: mysql/mysql-server:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: 123123123
+      MYSQL_DATABASE: vd_ecommerce
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
