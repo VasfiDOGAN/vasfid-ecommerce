@@ -27,8 +27,22 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 123123123
       MYSQL_DATABASE: vd_ecommerce
+    ports:
+      - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    platform: linux/amd64
+    environment:
+      PMA_HOST: database
+      MYSQL_ROOT_PASSWORD: 123123123
+    ports:
+      - "8080:80"
+    depends_on:
+      - database
 
 volumes:
   db_data:
