@@ -1,22 +1,19 @@
 # vasfid-ecommerce
 
-vasfid-ecommerce is a scalable e-commerce application built using Docker, Nginx, Python (backend), and MySQL.
-
-## Features
-- Nginx is used as a web server and load balancer.
-- Python backend service (Flask) for handling API requests.
-- MySQL database for data storage.
-- Docker Compose for easy setup and management of services.
-
-### Accessing the Application
-To access the application, navigate to `localhost` in your web browser. 
-The Nginx server will automatically route the requests to one of the backend services based on the load balancing configuration.
-
-#### Database Access
-For database access, you can use the following credentials:
-- **URL:** `localhost:8080`
-- **Username:** `root`
-- **Password:** `123123123`
-
-##### Clone the repository
-git clone https://github.com/VasfiDOGAN/vasfid-ecommerce.git
+| **Proje Bilgileri** | **Redis & RabbitMQ Bilgileri** |
+| ------------------- | ----------------------------- |
+| **vasfid-ecommerce** <br> vasfid-ecommerce is a scalable e-commerce application built using Docker, Nginx, Python (backend), and MySQL. | **Redis** |
+| **Features** <br> - Nginx is used as a web server and load balancer. <br> - Python backend service (Flask) for handling API requests. <br> - MySQL database for data storage. <br> - Docker Compose for easy setup and management of services. | **1) Pub-Sub for Real-Time Notifications – Building a Chat Application** <br> Redis'in Pub/Sub (Publish/Subscribe) mekanizması, gerçek zamanlı bildirimler ve anlık iletişim gerektiren uygulamalar için güçlü bir çözüm sunar. Özellikle sohbet uygulamaları gibi anlık mesajlaşma gereksinimi olan sistemlerde, Redis Pub/Sub kullanılarak kullanıcılar arasında hızlı ve etkili bir iletişim altyapısı kurulabilir. |
+| **Accessing the Application** <br> To access the application, navigate to localhost in your web browser. The Nginx server will automatically route the requests to one of the backend services based on the load balancing configuration. | **Pub/Sub Modeli** <br> Redis Pub/Sub, yayıncılar (publishers) ve aboneler (subscribers) arasında mesajların asenkron olarak iletilmesini sağlayan bir mesajlaşma modelidir. Bu modelde, bir kanal (channel) üzerinden mesaj yayınlanır ve bu kanala abone olan tüm alıcılar bu mesajları alır. |
+| **Database Access** <br> For database access, you can use the following credentials: <br> - URL: localhost:8080 <br> - Username: root <br> - Password: 123123123 | **Kanal Üzerinden Mesaj Yayınlama (Publish):** <br> `PUBLISH chat_channel "user1: Hello, how are you?"` ——> komutu `chat_channel` adlı kanala bir mesaj yayınlar. Mesaj, `user1` tarafından gönderilen "Hello, how are you?" mesajıdır. Bu mesaj, `chat_channel` kanalına abone olan tüm kullanıcılar tarafından alınır. |
+| **Clone the repository** <br> `git clone https://github.com/VasfiDOGAN/vasfid-ecommerce.git` | **Kanal Aboneliği (Subscribe):** <br> `SUBSCRIBE chat_channel` ——> komutu ise `chat_channel` adlı kanala abone olur. Bu komutu çalıştıran kullanıcı, bu kanala yayınlanan tüm mesajları anında alacaktır. |
+| | **2) Message Queues – Job Queue for Background Processing** <br> Redis'in List veri yapısı, FIFO (First-In, First-Out) prensibiyle çalışır ve bu yapı, iş kuyrukları için idealdir. İşler (jobs) sırayla kuyruklanır ve kuyruktan çekilerek işlenir. |
+| | **LPUSH job_queue "send_email:1001"** <br> komutu ile ‘job_queue’ kuyruğunun başına bir iş ekler. ‘send_email:1001’ iş tanımı, bir e-posta gönderme işlemini temsil eder ve kuyrukta işlenmeyi bekler. |
+| | **RPOP job_queue** <br> komutu ile kuyruktaki son işi(en eski iş) çekip getirir ve bu işin işlenmeye başlanmasını sağlar. kuyruktan çekilen bu iş, artık kuyrukta bulunmaz ve bu iş işlendikten sonra bir sonraki iş işlenmeye hazırdır. |
+| | **Blocking Operations(bloklama işlemleri):** <br> Arka plan işleyicileri (background workers), genellikle kuyruktaki bir işin gelmesini beklerken bloklanır. Redis, `BRPOP` gibi bloklama işlemleri sunarak, bir iş geldiğinde hemen işlenmeye başlanmasını sağlar. |
+| | **BRPOP job_queue 0** <br> Bu komut, job_queue adlı kuyruktan bir iş çekmeye çalışır. Eğer kuyruk boşsa, iş kuyruğunda yeni bir iş olana kadar işlem bloke olur. `0` parametresi, iş gelene kadar süresiz beklemeyi belirtir. |
+| | **3) Session Store (Kullanıcı Oturumlarını Yönetme):** <br> Redis, kullanıcı oturum bilgilerini saklamak için genellikle Hash veri yapısı kullanır. her bir kullanıcı oturumu için farklı bir ‘session_id’ ile tanımlanır ve bu ‘session_id’ , Redis’te bir key olarak kullanılır. |
+| | **HSET session:abc123 user_id 1001 is_logged_in true last_active 1626789876** <br> kullanıcı oturum verisine hızlı erişimi sağlayarak kullanıcının uygulamada kesintisiz bir deneyim yaşamasını sağlar. düşük gecikme süresiyle bu verilerin hızlıca çekilmesi de Redis ile sağlanır. |
+| | **RABBITMQ** <br> **1) Mobile Applications – RabbitMQ for Message Delivery to Mobile Devices** <br> RabbitMQ, mesajlaşma sistemlerinde yüksek performans, esneklik ve güvenilirlik sunar. Mobil uygulamalar için, her bir uygulama örneği (instance) için ayrı bir kuyruk oluşturulabilir ve mesajlar bu kuyruklar üzerinden iletilebilir. |
+| | **2) Microservices – Using RabbitMQ as a Central Broker** <br> Microservices mimarisinde, RabbitMQ merkezi bir mesajlaşma aracısı olarak hizmet vererek, mikro hizmetler arasındaki iletişimi kolaylaştırır. |
+| | **3) Critical APIs – Using RabbitMQ for Handling Long-Running Downstream Services** <br> Kritik API'lerin hızlı yanıt vermesi gereken ancak arka planda çalışan servislerin uzun süre alabileceği durumlar için RabbitMQ kullanılır. |
